@@ -1,0 +1,54 @@
+pkg_origin=
+
+pkg_name=scilab
+pkg_version=5.5.0
+_pkg_version=5.5.0-beta-1
+pkgrel=1
+pkg_description='Scientific software package for numerical computations.'
+pkg_license=('custom:CeCILL')
+pkg_deps=('pcre' 'fftw' 'tk' 'hdf5' 'java-environment' 'lapack' 'shared-mime-info'
+         'desktop-file-utils' 'hicolor-icon-theme' 'gcc-fortran')
+pkg_build_deps=('apache-ant' 'antlr2' 'awk' 'ocaml')
+install=$pkg_name.install
+options=('!libtool' '!emptydirs')
+pkg_source=("http://www.scilab.org/download/${_pkg_version}/prerequirements-scilab-${_pkg_version}-x86_64-src.tar.gz" 
+        "http://www.scilab.org/download/${_pkg_version}/scilab-${_pkg_version}-src.tar.gz" 
+        'scilab.desktop')
+pkg_shasum=('c3007994385666eff7ec768ac6e83989'
+         '94b3538d731b2e16395574360bc239e9'
+         'ad6286f324891fe8b86c60e4012a36b7')
+ 
+
+
+
+do_build() {
+  LDFLAGS=${LDFLAGS/ -Wl,--as-needed}
+  cd $CACHE_PATH/scilab-$_pkg_version
+  
+  ./configure \
+    --prefix=/usr \
+    --enable-build-localization \
+    --without-matio \
+    --with-fftw \
+    --with-modelica \
+    --with-gfortran  
+
+  cp etc/classpath.xml.vc etc/classpath.xml
+  make all doc
+}
+
+do_package() {
+  cd scilab-${_pkg_version} 
+  make DESTDIR="${pkg_prefix}" install install-html
+
+  install -d ${pkg_prefix}/usr/share/licenses/scilab
+  install -Dm644 ${CACHE_PATH}/scilab-${pkg_version}${pkg_addon}/COPYING ${pkg_prefix}/usr/share/licenses/scilab
+  install -Dm644 ${CACHE_PATH}/${pkg_name}.desktop ${pkg_prefix}/usr/share/applications/${pkg_name}.desktop
+  sed -i 's#/jni##' ${pkg_prefix}/usr/share/scilab/etc/librarypath.xml
+  
+  cd $CACHE_PATH/scilab-${pkg_version}${pkg_addon}/thirdparty
+  for _i in *.jar
+  do
+    install -Dm644 ${_i} $pkg_prefix/usr/share/scilab/thirdparty/${_i}
+  done
+}

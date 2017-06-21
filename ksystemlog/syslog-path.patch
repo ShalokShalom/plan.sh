@@ -1,0 +1,12 @@
+--- a/src/modes/system/systemConfiguration.h	2015-11-15 07:46:00.000000000 -0500
++++ b/src/modes/system/systemConfiguration.h	2016-01-16 14:49:39.645115221 -0500
+@@ -38,7 +38,7 @@
+ public:
+     SystemConfiguration()
+         : GenericLogModeConfiguration(QStringLiteral(SYSTEM_LOG_MODE_ID),
+-                                      QStringList() << QStringLiteral("/var/log/syslog"),
++                                      QStringList() << QStringLiteral("/var/log/pacman.log"),
+                                       QList<int>() << Globals::INFORMATION_LOG_LEVEL_ID)
+     {
+         /*
+

@@ -1,0 +1,8 @@
+post_install() {
+  udevadm hwdb --update
+}
+
+post_remove() {
+  post_install
+}
+

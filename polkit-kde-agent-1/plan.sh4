@@ -1,0 +1,33 @@
+pkg_origin=
+
+pkg_name=polkit-kde-agent
+pkg_version=0.99.0
+pkgrel=5
+pkg_description='KDE PolicyKit Authentication Agent'
+pkg_upstream_url='http://www.kde.org'
+pkg_license=('GPL')
+pkg_deps=('kdelibs' 'polkit-qt')
+pkg_build_deps=('cmake' 'automoc4')
+groups=("kde-uninstall" "kde-support")
+pkg_source=("ftp://ftp.kde.org/pub/kde/stable/apps/KDE4.x/admin/${pkg_name}-1-${pkg_version}.tar.bz2")
+pkg_shasum=('a02d3fddc6270a88bceaf3ba604c92f8')
+
+do_build() {
+	cd ${CACHE_PATH}/${pkg_name}-1-${pkg_version}
+
+	cd ..
+	mkdir -p build
+	cd build
+	export XDG_CONFIG_DIRS=/etc/xdg
+	cmake ../${pkg_name}-1-${pkg_version} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_SKIP_RPATH=ON
+	make 
+}
+
+do_package() {
+	cd ${CACHE_PATH}/build
+	
+	make DESTDIR=${pkg_prefix} install
+}

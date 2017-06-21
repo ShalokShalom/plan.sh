@@ -1,0 +1,29 @@
+pkg_origin=
+
+pkg_name=firefox
+pkg_description='Standalone web browser from mozilla.org'
+pkg_upstream_url='http://www.mozilla.org/projects/firefox'
+pkg_version=40.0.3
+pkgrel=1
+pkg_license=('MPL' 'GPL' 'LGPL')
+groups=('network')
+install=firefox.install
+pkg_deps=('desktop-file-utils' 'libxt' 'mime-types' 'nss' 'shared-mime-info' 'gtk2' 'networkmanager'
+         'gst-plugins-good' 'gst-plugins-bad')
+#pkg_source=("http://download-installer.cdn.mozilla.net/pub/firefox/releases/${pkg_version}/linux-x86_64/en-US/firefox-${pkg_version}.tar.bz2"
+pkg_source=("https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${pkg_version}/linux-x86_64/en-US/firefox-${pkg_version}.tar.bz2"
+        'firefox.desktop' 
+        'firefox-safe.desktop')
+pkg_shasum=('a1538a8a5b4db97f6faa4e535de5877f'
+         'db722eb1f9778aab80159cdbd9f0b56d'
+         '2f004e44dd2ef3138367ea5b1bc1a219')
+
+do_package() {
+  cd "${CACHE_PATH}"
+  mkdir -p "${pkg_prefix}"/{usr/{bin,share/{applications,pixmaps}},opt}
+  cp -r firefox "${pkg_prefix}/opt/firefox-${pkg_version}"
+
+  ln -s /opt/firefox-${pkg_version}/firefox "${pkg_prefix}/usr/bin/firefox"
+  install -m644 "${CACHE_PATH}"/{firefox.desktop,firefox-safe.desktop} "${pkg_prefix}/usr/share/applications/"
+  install -m644 "${CACHE_PATH}/firefox/browser/icons/mozicon128.png" "${pkg_prefix}/usr/share/pixmaps/${pkg_name}-icon.png"
+}

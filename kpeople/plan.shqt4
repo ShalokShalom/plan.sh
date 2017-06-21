@@ -1,0 +1,28 @@
+pkg_origin=
+
+pkg_name=libkpeople
+pkg_version=0.3.0
+pkgrel=1
+pkg_description="A contact aggregation library for KDE"
+pkg_upstream_url='http://community.kde.org/KTp/libkpeople'
+pkg_license=('LGPL')
+pkg_deps=('kdepimlibs' 'baloo')
+pkg_build_deps=('cmake' 'automoc4' 'boost')
+pkg_source=("http://download.kde.org/unstable/libkpeople/${pkg_version}/src/${pkg_name}-${pkg_version}.tar.bz2")
+pkg_shasum=('cf9c565742dde9b8743a2dfea2d8259f')
+
+do_build() {
+  mkdir build
+  cd build
+
+  cmake ../${pkg_name}-${pkg_version} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+do_package() {
+  cd build
+
+  make DESTDIR="${pkg_prefix}/" install
+}

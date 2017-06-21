@@ -1,0 +1,34 @@
+pkg_origin=
+
+pkg_name=kaccounts-integration
+pkg_version=0.1.2
+pkgrel=1
+pkg_description="System to administer web accounts for the sites and services across the KDE desktop, 
+        including: Google, Facebook, Owncloud, IMAP, Jabber and others"
+pkg_upstream_url="https://projects.kde.org/projects/kdereview/kaccounts-integration"
+pkg_license=('GPL')
+pkg_deps=('kaccounts-providers' 'libkgapi' 'libkfbapi' 'qjson' 'telepathy-qt' 
+         'ktp-common-internals' 'accountsqt' 'signonqt' 'akonadi' 'kdepimlibs')
+pkg_build_deps=('cmake' 'automoc4' 'git')
+#groups=('kde-telepathy')
+pkg_source=("git://anongit.kde.org/kaccounts-integration.git#branch=stable")
+pkg_shasum=('SKIP')
+
+do_build() {
+  cd ${CACHE_PATH}
+  
+  mkdir -p build
+  cd build
+
+  cmake ../${pkg_name} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr 
+  make
+}
+
+do_package() {
+  cd build
+  make DESTDIR=${pkg_prefix} install
+  
+  rm -r ${pkg_prefix}/usr/share/icons
+}

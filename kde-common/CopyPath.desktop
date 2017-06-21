@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin,,all/allfiles,application/octet-stream,inode/directory,inode/directory-locked,inode/directory-hidden
+Actions=CopyPath
+
+[Desktop Action CopyPath]
+Name=Copy Path
+Icon=klipper
+Exec=echo "%F" | tr -d '\n' | xclip -selection clipboard

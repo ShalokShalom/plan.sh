@@ -1,0 +1,13 @@
+--- Makefile.in.orig	2009-04-18 00:12:45.000000000 +0200
++++ Makefile.in	2009-04-18 00:16:06.000000000 +0200
+@@ -54,8 +54,8 @@
+ 	cp $(lib_so) $(DESTDIR)$(PREFIX)/$(libdir)/$(lib_so)
+ 	[ -n "$(soname)" ] && \
+ 		rm -f $(DESTDIR)$(PREFIX)/$(libdir)/$(soname) $(DESTDIR)$(PREFIX)/$(libdir)/$(devlink) && \
+-		ln -s $(DESTDIR)$(PREFIX)/$(libdir)/$(lib_so) $(DESTDIR)$(PREFIX)/$(libdir)/$(soname) && \
+-		ln -s $(DESTDIR)$(PREFIX)/$(libdir)/$(soname) $(DESTDIR)$(PREFIX)/$(libdir)/$(devlink) || \
++		ln -s $(lib_so) $(DESTDIR)$(PREFIX)/$(libdir)/$(soname) && \
++		ln -s $(soname) $(DESTDIR)$(PREFIX)/$(libdir)/$(devlink) || \
+ 		true
+ 	for h in $(hdr); do cp -p $(CACHE_PATH)/$$h $(DESTDIR)$(PREFIX)/include/; done
+ 

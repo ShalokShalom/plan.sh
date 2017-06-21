@@ -1,0 +1,15 @@
+#!/bin/bash
+
+user_name="$(logname)"
+
+post_install() {
+    
+    if [ ! -f /home/${user_name}/.local/share/ktorrent ]; then
+        mkdir -p /home/${user_name}/.local/share/ktorrent
+        chown -R ${user_name}:users /home/${user_name}/.local/share/ktorrent
+    fi
+}
+
+post_upgrade() {
+    post_install
+}

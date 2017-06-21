@@ -1,0 +1,24 @@
+pkg_origin=
+
+pkg_name=blender
+pkg_version=2.70
+_pkg_version=2.70
+pkgrel=1
+pkg_description="A fully integrated 3D graphics creation suite"
+pkg_license=('GPL')
+pkg_upstream_url="http://www.blender.org"
+pkg_deps=('libpng' 'libtiff' 'python3' 'desktop-file-utils' 'shared-mime-info'
+         'hicolor-icon-theme' 'xdg-utils' 'glew')
+install=blender.install
+pkg_source=("http://ftp.nluug.nl/pub/graphics/$pkg_name/release/Blender$_pkg_version/$pkg_name-$_pkg_version-linux-glibc211-x86_64.tar.bz2"
+        'blender.desktop')
+pkg_shasum=('f1d6a457e66b90a4717603bf38483e3d')
+
+do_package() {
+  cd "$CACHE_PATH/$pkg_name-$_pkg_version-linux-glibc211-x86_64"
+  
+  install -d "$pkg_prefix/opt"
+  "$pkg_name-$_pkg_version-linux-glibc211-x86_64/" -C "$pkg_prefix/opt"
+
+  install -Dm644 "$CACHE_PATH/$pkg_name.desktop" "$pkg_prefix/usr/share/applications/$pkg_name.desktop"
+}

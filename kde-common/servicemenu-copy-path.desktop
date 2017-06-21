@@ -1,0 +1,19 @@
+# Version 0.1.1
+#
+[Desktop Entry]
+X-SuSE-translate=true
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+ServiceTypes=all/allfiles
+Actions=wholePath;
+Type=Service
+Name=Copy Path
+Name[ca]=Copia el camí­ sencer
+Name[de]=kopiere Pfad
+Name[el]=Αντιγραφή Ολόκληρης Διαδρομής
+Name[es]=Copiar ruta completa
+Name[fr]=copier le chemin complet
+Name[it]=copia l'intero percorso
+Name[ja]=フルパスをコピー
+Icon=klipper
+Exec=qdbus-qt5 org.kde.klipper.desktop /klipper setClipboardContents %U
+

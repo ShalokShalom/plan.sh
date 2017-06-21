@@ -1,0 +1,21 @@
+post_install() {
+  getent group rtkit &>/dev/null || /usr/sbin/groupadd -g 133 rtkit || return 1
+  getent passwd rtkit &>/dev/null || /usr/sbin/useradd -u 133 -g rtkit -c 'RealtimeKit' -s /sbin/nologin -d /proc rtkit || return 1
+
+  dbus-send --system --type=method_call --dest=org.freedesktop.DBus / org.freedesktop.DBus.ReloadConfig >/dev/null 2>&1
+
+  true
+}
+
+post_upgrade() {
+
+  dbus-send --system --type=method_call --dest=org.freedesktop.DBus / org.freedesktop.DBus.ReloadConfig >/dev/null 2>&1
+}
+
+post_remove() {
+  getent passwd rtkit &>/dev/null && /usr/sbin/userdel -f rtkit
+  getent group rtkit &>/dev/null && /usr/sbin/groupdel rtkit
+
+  true
+}
+

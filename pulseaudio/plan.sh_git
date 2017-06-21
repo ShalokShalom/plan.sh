@@ -1,0 +1,72 @@
+pkg_origin=cosmos
+
+pkg_name="pulseaudio-git"
+_pkg_name="pulseaudio"
+pkg_description="A featureful, general-purpose sound server"
+pkg_version=20130214
+pkg_upstream_url="http://pulseaudio.org/"
+pkg_license=('GPL' 'LGPL')
+pkg_deps=('dbus-core' 'xcb-util' 'libasyncns' 'libcap' 'libxtst' 'libsm'
+         'libsamplerate' 'json-c' 'rtkit' 'libltdl' 'speex' 'tdb'
+         'fftw' 'orc' 'webrtc-audio-processing' 'systemd>=195' 'sbc')
+pkg_build_deps=('git' 'attr' 'libltdl' 'avahi' 'bluez' 'intltool' 'jack' 'lirc-utils' 'openssl'
+             'libsndfile' 'pkgconfig' 'sh')
+optpkg_deps=('avahi: zeroconf support'
+            'bluez: bluetooth support'
+            'jack: jack support'
+            'lirc-utils: infra-red support'
+            'openssl: RAOP support')
+backup=(etc/pulse/{daemon.conf,default.pa,system.pa,client.conf})
+
+pkg_source=(${_pkg_name}.xinit)
+pkg_shasum=('eb1cfae28eb2e4d3fdbe45a90e4318ab')
+
+
+_gitroot="git://anongit.freedesktop.org/pulseaudio/pulseaudio"
+_gitname="pulseaudio"
+
+do_build() {
+  msg "Connecting to GIT server...."
+
+  if [ -d $_gitname ] ; then
+    msg "The local files are updated."
+  else
+    git clone $_gitroot $_gitname
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf "$CACHE_PATH/$_gitname-build"
+  git clone "$CACHE_PATH/$_gitname" "$CACHE_PATH/$_gitname-build"
+
+ ./autogen.sh --prefix=/usr \
+              --sysconfdir=/etc \
+              --libexecdir=/usr/lib \
+              --localstatedir=/var \
+              --with-udev-rules-dir=/usr/lib/udev/rules.d \
+              --with-database=tdb \
+              --disable-rpath \
+              --disable-default-build-tests
+
+  make
+}
+
+do_package() {
+  make DESTDIR="$CACHE_PATH" install
+
+  # Lower resample quality
+  sed -e '/resample-method/iresample-method=speex-float-0' \
+      -i "$CACHE_PATH/etc/pulse/daemon.conf"
+
+  # Disable cork-request module, can result in e.g. media players unpausing
+  # when there's a Skype call incoming
+  sed -e 's|/usr/bin/pactl load-module module-x11-cork-request|#&|' \
+      -i "$CACHE_PATH/usr/bin/start-${_pkg_name}-x11"
+
+  install -Dm755 "$CACHE_PATH/${_pkg_name}.xinit" "$CACHE_PATH/etc/X11/xinit/xinitrc.d/${_pkg_name}"
+
+  rm "$CACHE_PATH/etc/dbus-1/system.d/${_pkg_name}-system.conf"
+  rm "${CACHE_PATH}/etc/xdg/autostart/pulseaudio.desktop"
+  rm "${CACHE_PATH}/etc/xdg/autostart/pulseaudio-kde.desktop"
+}

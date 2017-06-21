@@ -1,0 +1,7 @@
+post_install() {
+  echo "Example use of the \"go\" tool as a user:"
+  echo "    mkdir ~/go"
+  echo "    export GOPATH=~/go"
+  echo "    go get website.com/user/module"
+}
+

@@ -1,0 +1,40 @@
+pkg_origin=
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
+pkg_name=baloo
+pkg_version=${_kdever}
+pkgrel=1
+pkg_description="A framework for searching and managing metadata"
+pkg_upstream_url='https://projects.kde.org/projects/kde/kdelibs/baloo'
+pkg_license=('LGPL')
+pkg_deps=('kdepimlibs' 'xapian-core' 'kfilemetadata' 'qjson' 'akonadi')
+pkg_build_deps=('cmake' 'automoc4' 'boost')
+groups=('kde' 'kde-uninstall')
+conflict=('virtuoso' 'soprano' 'redland-storage-virtuoso' 'nepomuk-widgets' 'nepomuk-core')
+replaces=('virtuoso' 'soprano' 'redland-storage-virtuoso' 'nepomuk-widgets' 'nepomuk-core')
+pkg_source=($_mirror/${pkg_name}-$_kdever.tar.xz)
+pkg_shasum=(`grep ${pkg_name}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
+
+do_prepare() {
+  cd "${CACHE_PATH}/${pkg_name}-${pkg_version}"
+  
+  #patch -p1 -i "${CACHE_PATH}/add_disable_kcm.diff"
+}
+
+do_build() {
+  mkdir build
+  cd build
+  
+  cmake ../${pkg_name}-${pkg_version} \
+        -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+do_package() {
+  cd build
+  
+  make DESTDIR="${pkg_prefix}" install
+}

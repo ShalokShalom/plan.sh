@@ -1,0 +1,10 @@
+pkg_origin=cosmos
+pkg_name=xcb-util-keysyms
+pkg_version=0.4.0
+pkg_description="Utility libraries for XC Binding"
+pkg_upstream_url="http://xcb.freedesktop.org"
+pkg_license=('custom')
+pkg_deps=('xorg/libxcb' 'cosmos/xcb-util' 'xorg/libXau' "xorg/xproto" "xorg/libXdmcp" 'xorg/libpthread-stubs' 'xorg/util-macros' 'core/make')
+pkg_build_deps=('cosmos/gperf' 'core/pkg-config' 'core/gcc' 'core/automake')
+pkg_source=("http://xcb.freedesktop.org/dist/${pkg_name}-${pkg_version}.tar.bz2")
+pkg_shasum=0ef8490ff1dede52b7de533158547f8b454b241aa3e4dcca369507f66f216dd9

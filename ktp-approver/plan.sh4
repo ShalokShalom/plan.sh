@@ -1,0 +1,30 @@
+pkg_origin=
+
+pkg_name=ktp-approver
+pkg_version=0.9.0
+pkgrel=1
+pkg_description="KDE Channel Approver for Telepathy"
+pkg_upstream_url="http://www.kde.org"
+pkg_license=('GPL')
+pkg_deps=('ktp-common-internals' 'ktp-contact-list' )
+pkg_build_deps=('cmake' 'automoc4')
+groups=('kde-telepathy')
+pkg_source=("ftp://mirrors.mit.edu/kde/stable/kde-telepathy/${pkg_version}/src/${pkg_name}-${pkg_version}.tar.bz2")
+pkg_shasum=('0e523ffcc041fcd8cf780a9e2f3aec84')
+
+do_build() {
+  cd "${CACHE_PATH}"
+  mkdir build
+  
+  cd build
+  cmake ../${pkg_name}-${pkg_version} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release
+  make
+}
+
+do_package() {
+  cd "${CACHE_PATH}"/build
+  
+  make DESTDIR="${pkg_prefix}" install
+}

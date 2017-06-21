@@ -1,0 +1,31 @@
+pkg_origin=
+
+pkg_name=bluedevil
+pkg_version=2.1
+_pkg_version=2.1
+pkgrel=1
+pkg_description='KDE bluetooth framework'
+pkg_upstream_url="https://projects.kde.org/projects/extragear/base/bluedevil"
+pkg_license=('GPL')
+pkg_deps=('kde-workspace' 'libbluedevil' 'bluez')
+pkg_build_deps=('cmake' 'automoc4')
+install="${pkg_name}.install"
+pkg_source=("http://download.kde.org/stable/bluedevil/${_pkg_version}/src/${pkg_name}-${_pkg_version}.tar.xz")
+pkg_shasum=('7b154bdebd971df9e838f290b76a2cd0')
+
+do_build(){
+  cd "${CACHE_PATH}"
+  mkdir build
+  
+  cd build
+  cmake ../${pkg_name}-${_pkg_version} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+do_package() {
+  cd "${CACHE_PATH}"/build
+  
+  make DESTDIR="${pkg_prefix}" install
+}

@@ -1,0 +1,50 @@
+pkg_origin=cosmos
+
+pkg_name=usbmuxd
+pkg_version=1.0.8
+pkg_description="USB Multiplex Daemon"
+pkg_upstream_url="http://marcansoft.com/blog/iphonelinux/usbmuxd/"
+pkg_license=('GPL2' 'GPL3' 'LGPL2.1')
+pkg_deps=('glib2' 'libxml2')
+pkg_build_deps=('cmake')
+install=usbmuxd.install
+pkg_source=("http://cgit.sukimashita.com/${pkg_name}.git/snapshot/${pkg_name}-${pkg_version}.tar.bz2"
+        'usbmuxd.service'
+	'85-usbmuxd.rules')
+pkg_shasum=('87fd27773a84e97ac6e2dc28b08d682e'
+         'dae0660f972510a6483992b5b81e1b5a'
+         'dc4b2893651149eccbf7b2c8467cd288')
+
+do_build() {
+
+  mkdir build
+  
+  cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=/usr -DLIB_SUFFIX=""
+  make
+}
+
+do_package() {
+  make DESTDIR="${CACHE_PATH}" install
+
+ # Fix dirty versioning
+  #if [ -e ${CACHE_PATH}/usr/lib/libusbmuxd.so.-dirty ] ; then
+  #sed -i -e "s~-dirty~${pkg_version}~g" ${CACHE_PATH}/usr/lib/pkgconfig/libusbmuxd.pc
+  #mv ${CACHE_PATH}/usr/lib/libusbmuxd.so.-dirty ${CACHE_PATH}/usr/lib/libusbmuxd.so.${pkg_version}
+ # elif [ -e ${CACHE_PATH}/usr/lib/libusbmuxd.so.UNKNOWN ] ; then
+  #sed -i -e "s~-UNKNOWN~${pkg_version}~g" ${CACHE_PATH}/usr/lib/pkgconfig/libusbmuxd.pc
+  #mv ${CACHE_PATH}/usr/lib/libusbmuxd.so.UNKNOWN ${CACHE_PATH}/usr/lib/libusbmuxd.so.${pkg_version}
+  #fi
+  
+ ln -sr $CACHE_PATH/usr/lib/libusbmuxd.so $CACHE_PATH/usr/lib/libusbmuxd.so.1
+  
+ # install systemd service file
+  install -D -m644 ${CACHE_PATH}/usbmuxd.service ${CACHE_PATH}/usr/lib/systemd/system/usbmuxd.service
+
+  # udev moved to /usr/lib
+  mv "${CACHE_PATH}/lib/udev" "${CACHE_PATH}/usr/lib/"
+  rmdir "${CACHE_PATH}/lib"
+
+  # use udev rule that works with systemd
+  install -m644 ${CACHE_PATH}/85-usbmuxd.rules ${CACHE_PATH}/usr/lib/udev/rules.d/
+}
+

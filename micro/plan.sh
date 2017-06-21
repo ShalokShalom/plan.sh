@@ -1,0 +1,10 @@
+pkg_origin=cosmos
+pkg_name=micro
+pkg_version=1.2.0
+_commit=c409f1cc07f5c0e4b6e9766ab9bb10f1ebd92015
+pkg_description='Terminal-based text editor that aims to be easy to use and intuitive, with full capabilities of modern terminals.'
+pkg_upstream_url='https://github.com/zyedidia/micro'
+pkg_license=('MIT')
+pkg_build_deps=('core/go' 'core/automake' 'core/autoconf')
+pkg_source=("https://github.com/zyedidia/micro/archive/v${pkg_version}.tar.gz")
+pkg_shasum=("108876de0d136b2ec2ffc7e2f8897338ae1f56ac5db88eff4ae1772191df03bb")

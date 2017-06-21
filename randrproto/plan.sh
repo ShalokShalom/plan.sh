@@ -1,0 +1,9 @@
+pkg_origin=cosmos
+pkg_name=randrproto
+pkg_version=1.5.0
+pkg_description="X11 RandR extension wire protocol"
+pkg_license=('custom')
+pkg_build_deps=('core/gcc' 'core/make' 'cosmos/util-macros')
+pkg_upstream_url="http://xorg.freedesktop.org/"
+pkg_source=("http://xorg.freedesktop.org/releases/individual/proto/${pkg_name}-${pkg_version}.tar.bz2")
+pkg_shasum=4c675533e79cd730997d232c8894b6692174dce58d3e207021b8f860be498468

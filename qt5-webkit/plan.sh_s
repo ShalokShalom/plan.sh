@@ -1,0 +1,32 @@
+pkg_origin=cosmos
+
+pkg_name=qt5-webkit
+pkg_version=5.3.2
+subver=5.3.2
+_pkg_version=5.3
+pkg_description=('A cross-platform application and UI framework, QtWebkit files')
+pkg_upstream_url='http://qt.nokia.com/'
+pkg_license=('GPL3' 'LGPL' 'FDL')
+pkg_deps=('qt5-sensors' 'qt5-location' 'qt5-quickcontrols' 'icu' 'libxslt' 'libxcomposite' 
+         'gst-plugins-base' 'gst-plugins-good' 'libwebp' 'mesa' 'qt5-serialport' 'qt5-multimedia'
+         'qt5-imageformats' 'gst-libav' 'gst-plugins-bad')
+pkg_build_deps=('gperf' 'sqlite' 'fontconfig' 'perl' 'python2' 'ruby')
+groups=('qt5')
+_pkgfqn="qtwebkit-opensource-src-${subver}"
+pkg_source=("http://download.qt-project.org/official_releases/qt/${_pkg_version}/${pkg_version}/submodules/$_pkgfqn.tar.xz")
+pkg_shasum=('0497b5b46540848e0db6a9e219d756fb')
+
+do_build() {
+	
+   /usr/lib/qt5/bin/qmake
+   make
+}
+
+do_package() {
+   make INSTALL_ROOT=$CACHE_PATH install
+    
+   #mkdir -p ${CACHE_PATH}/usr/bin
+   #for i in $(ls ${CACHE_PATH}/usr/lib/qt5/bin); do
+   #    ln -s /usr/lib/qt5/bin/${i} ${CACHE_PATH}/usr/bin/${i}-qt5
+   #done
+}

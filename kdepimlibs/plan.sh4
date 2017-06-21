@@ -1,0 +1,43 @@
+pkg_origin=
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
+pkg_name="kdepimlibs"
+pkg_version=4.14.5
+pkgrel=1
+
+pkg_description="KDE Pim Libraries"
+pkg_upstream_url="http://www.kde.org"
+pkg_license=('GPL' 'LGPL' 'FDL')
+
+install=${pkg_name}.install
+options=('docs' 'debug')
+pkg_deps=('kdelibs' 'akonadi' 'libical' 'gpgme' 'prison' 'libdmtx' 'qrencode' 'qjson')
+pkg_build_deps=('pkg-config' 'cmake' 'automoc4' 'boost' 'cyrus-sasl' 'openldap' 'prison' 'docbook-xsl')
+
+groups=("kde" "kde-uninstall" "kde-minimal")
+
+pkg_source=($_mirror/${pkg_name}-${pkg_version}.tar.xz)
+pkg_shasum=('0c027a427a15487d594aa1d6d20b339c')
+
+do_build() {
+	msg "starting build ..."
+	cd ${CACHE_PATH}
+	mkdir -p build
+	cd build
+
+	cmake ../${pkg_name}-${pkg_version} \
+		-DCMAKE_BUILD_TYPE=${_build_type} \
+		-DCMAKE_INSTALL_PREFIX=${_installprefix} \
+		-DCMAKE_SKIP_RPATH=ON \
+		-DCMAKE_{SHARED,MODULE,EXE}_LINKER_FLAGS='-Wl,--no-undefined -Wl,--as-needed'
+
+	make
+}
+
+do_package() {
+	cd ${CACHE_PATH}/build
+	
+	make DESTDIR=${pkg_prefix} install
+}

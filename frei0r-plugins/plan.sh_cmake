@@ -1,0 +1,37 @@
+pkg_origin=cosmos
+
+pkg_name=frei0r-plugins
+pkg_version=1.5.0
+_pkg_version=snapshot-27-01-15
+pkg_description="frei0r is a minimalistic plugin API for video sources and filters."
+pkg_upstream_url="http://www.piksel.org/frei0r"
+pkg_license=('GPL')
+pkg_deps=('gcc-libs' 'gavl' 'opencv')
+pkg_build_deps=('cmake' 'doxygen')
+pkg_source=("https://files.dyne.org/frei0r/releases/${pkg_name}-${pkg_version}.tar.gz"
+#pkg_source=("https://files.dyne.org/frei0r/snapshots/frei0r-${_pkg_version}.tar.gz"
+        #"http://www.linuxfromscratch.org/patches/blfs/svn/frei0r-snapshot-27-01-15-gcc5_fix-1.patch"
+        'facedetect.diff')
+pkg_shasum=('afdaa90dc70453c91bb60e0f71e701fd'
+         'b7eb97d16db106c9a081f05befeafc3f')
+
+prepare() {
+  
+  #patch -p1 -i ${CACHE_PATH}/frei0r-snapshot-27-01-15-gcc5_fix-1.patch
+}
+         
+do_build() {
+  mkdir -p build
+  
+  cmake ../${pkg_name}-${pkg_version} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release
+  make
+}
+
+do_package() {
+  
+  make DESTDIR=${pkg_prefix} install 
+}
+
+

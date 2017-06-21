@@ -1,0 +1,121 @@
+pkg_origin=cosmos
+ 
+pkgbase="llvm"
+pkg_name=('llvm' 'clang' 'clang-analyzer')
+pkg_version=3.6.2
+subver=3.6.2
+_gcc_ver=4.9.3
+pkg_upstream_url="http://llvm.org/"
+pkg_license=('custom:University of Illinois/NCSA Open Source License')
+pkg_build_deps=('gcc-libs' 'libffi' 'python2' 'ocaml' "gcc=${_gcc_ver}" 'groff' 'swig')
+pkg_source=("http://llvm.org/releases/${pkg_version}/${pkgbase}-${pkg_version}.src.tar.xz"
+        "http://llvm.org/releases/$pkg_version/cfe-$pkg_version.src.tar.xz"
+        "http://llvm.org/releases/$pkg_version/compiler-rt-$pkg_version.src.tar.xz")
+pkg_shasum=('0c1ee3597d75280dee603bae9cbf5cc2'
+         'ff862793682f714bb7862325b9c06e20'
+         'e3bc4eb7ba8c39a6fe90d6c988927f3c')
+
+do_build() {
+
+  # http://llvm.org/bugs/show_bug.cgi?id=4840
+  mv "${CACHE_PATH}/cfe-${pkg_version}.src" tools/clang
+
+  mv "$CACHE_PATH/compiler-rt-$pkg_version.src" projects/compiler-rt
+  
+  # http://llvm.org/bugs/show_bug.cgi?id=22742
+  chmod -R u=rwX,go=rX "$CACHE_PATH/llvm-$pkg_version.src"
+
+  # doc directories
+  sed -i 's:\$(PROJ_prefix)/docs/llvm:$(PROJ_prefix)/share/doc/llvm:' \
+      Makefile.config.in
+
+  # location libffi headers 
+  export CPPFLAGS="${CPPFLAGS} $(pkg-config --cflags libffi)"
+
+  _cxx_headers="/usr/include/c++/${_gcc_ver}"
+  
+  CC=gcc CXX=g++ \
+  ./configure --prefix=/usr \
+              --sysconfdir=/etc \
+              --enable-shared \
+              --enable-libffi \
+              --enable-targets=all \
+              --disable-expensive-checks \
+              --disable-debug-runtime \
+              --disable-assertions \
+              --with-binutils-include=/usr/include
+
+  make REQUIRES_RTTI=1
+}
+
+package_llvm() {
+pkg_description="The LLVM Core libraries provide a modern source- and target-independent optimizer, along with code generation support for many popular CPUs."
+pkg_deps=('perl' 'libffi')
+
+
+  # https://github.com/mxcl/homebrew/issues/8947#issuecomment-3256464
+  sed -e 's:\$(ObjDir)/META.llvm:\$(OcamlDir)/META.llvm:' \
+      -i bindings/ocaml/llvm/Makefile
+
+  # Move the clang directory 
+  mv tools/clang "${CACHE_PATH}"
+  # -j1, stop race conditions 
+  make -j1 DESTDIR="${pkg_prefix}" install
+  mv "${CACHE_PATH}/clang" tools
+
+  # Move OCaml bindings 
+  #rm -rf "${CACHE_PATH}"/{ocaml,ocamldoc}
+  #mv "${pkg_prefix}"/usr/{lib/ocaml,share/doc/llvm/ocamldoc} "${CACHE_PATH}"
+
+  # Remove duplicate files 
+  #rm "${pkg_prefix}"/usr/{lib/libllvm*,share/doc/llvm/ocamldoc.tar.gz}
+
+  # Fix permissions of static libs
+  chmod -x "${pkg_prefix}"/usr/lib/*.a
+  # Remove execute bit from static libraries
+  #chmod -x "${pkg_prefix}"/usr/lib/ocaml/libllvm*.a
+
+  rm "${pkg_prefix}"/usr/lib/*LLVMHello.*
+
+  install -D -m644 LICENSE.TXT "${pkg_prefix}/usr/share/licenses/${pkg_name}/LICENSE"
+}
+
+package_clang() {
+pkg_description="Clang is an \"LLVM native\" C/C++/Objective-C compiler, which aims to deliver amazingly fast compiles, extremely useful error and warning messages and to provide a platform for building great source level tools."
+pkg_upstream_url="http://clang.llvm.org/"
+# http://old.nabble.com/%22clang--v%22-shows-a-GCC-call-td28378453.html
+pkg_deps=("llvm=${pkg_version}-${pkgrel}" "gcc=${_gcc_ver}")
+
+  # Installation path docs
+  sed -e 's:$(PROJ_prefix)/share/doc/llvm:$(PROJ_prefix)/share/doc/clang:' \
+      -i "${CACHE_PATH}/${pkgbase}-${pkg_version}.src/Makefile.config"
+
+  make DESTDIR="${pkg_prefix}" install
+
+  chmod -x "${pkg_prefix}"/usr/lib/*.a
+
+  # Revert the path change in case of repackage
+  sed -e 's:$(PROJ_prefix)/share/doc/clang:$(PROJ_prefix)/share/doc/llvm:' \
+      -i "${CACHE_PATH}/${pkgbase}-${pkg_version}.src/Makefile.config"
+
+  install -D -m644 LICENSE.TXT "${pkg_prefix}/usr/share/licenses/${pkg_name}/LICENSE"
+}
+
+package_clang-analyzer() {
+pkg_description="The Clang Static Analyzer is a tool that automatically finds bugs in your code, and is a great example of the sort of tool that can be built using the Clang frontend as a library to parse C/C++ code."
+pkg_upstream_url="http://clang-analyzer.llvm.org/"
+pkg_deps=("clang=${pkg_version}-${pkgrel}" 'python2')
+
+
+  install -d "${pkg_prefix}"/usr/{bin,lib/clang-analyzer}
+  for _tool in scan-{build,view}; do
+    cp -r "tools/${_tool}" "${pkg_prefix}/usr/lib/clang-analyzer"
+    ln -s "/usr/lib/clang-analyzer/${_tool}/${_tool}" "${pkg_prefix}/usr/bin"
+  done
+
+  # Python scripts
+  python2 -m compileall "${pkg_prefix}/usr/lib/clang-analyzer"
+  python2 -O -m compileall "${pkg_prefix}/usr/lib/clang-analyzer"
+
+  install -D -m644 LICENSE.TXT "${pkg_prefix}/usr/share/licenses/${pkg_name}/LICENSE"
+}

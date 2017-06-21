@@ -1,0 +1,33 @@
+pkg_origin=
+
+pkg_name=libtorrent-rasterbar
+_pkg_name=libtorrent
+pkg_version=1.0.8
+_pkg_version=1_0_8
+pkgrel=1
+pkg_description="A C++ library that aims to be a good alternative to all the other bittorrent implementations around"
+pkg_upstream_url="http://www.rasterbar.com/products/libtorrent/"
+pkg_license=('custom')
+pkg_deps=('boost-libs' 'python2' 'geoip')
+pkg_build_deps=('boost' 'cmake')
+pkg_source=("https://github.com/arvidn/libtorrent/archive/${_pkg_name}-${_pkg_version}.tar.gz")
+pkg_shasum=('eaefb0ee6aca31eb3c50faef28a7f8ea')
+
+do_build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${_pkg_name}-${_pkg_name}-${_pkg_version} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Dgeoip=ON
+  make
+}
+
+do_package() {
+  cd build
+  make DESTDIR=${pkg_prefix} install
+  
+  install -D ../${_pkg_name}-${_pkg_name}-${_pkg_version}/COPYING ${pkg_prefix}/usr/share/licenses/$pkg_name/LICENSE
+}
+  

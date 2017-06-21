@@ -1,0 +1,10 @@
+--- init.orig	2013-12-17 21:01:49.456438521 -0500
++++ init	2013-12-17 21:04:36.457467564 -0500
+@@ -81,6 +81,6 @@
+ 
+ exec env -i \
+     "TERM=$TERM" \
+-    /usr/bin/switch_root /new_root $init "$@"
++    /usr/bin/switch_root /new_root $init "$@" 2&>/dev/null
+ 
+ # vim: set ft=sh ts=4 sw=4 et:

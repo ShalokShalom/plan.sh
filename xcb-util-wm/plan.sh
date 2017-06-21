@@ -1,0 +1,10 @@
+pkg_origin=cosmos
+pkg_name=xcb-util-wm
+pkg_version=0.4.1
+pkg_description="Utility libraries for XC Binding"
+pkg_upstream_url="http://xcb.freedesktop.org"
+pkg_license=('custom')
+pkg_deps=('cosmos/libxcb' 'cosmos/xcb-util')
+pkg_build_deps=('cosmos/gperf')
+pkg_source=("http://xcb.freedesktop.org/dist/${pkg_name}-${pkg_version}.tar.bz2")
+pkg_shasum=28bf8179640eaa89276d2b0f1ce4285103d136be6c98262b6151aaee1d3c2a3f

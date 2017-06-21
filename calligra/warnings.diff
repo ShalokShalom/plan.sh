@@ -1,0 +1,43 @@
+--- a/karbon/main.cpp	2016-04-29 23:49:59.000000000 -0400
++++ b/karbon/main.cpp	2016-05-01 19:13:27.645203702 -0400
+@@ -36,6 +36,9 @@
+ #include <KarbonDocument.h>
+ #include <ui/KarbonAboutData.h>
+ 
++#include <QMessageBox>
++#include <QCheckBox>
++
+ #ifdef MAINTANER_WANTED_SPLASH
+ class KoSplashScreen : public QSplashScreen
+ {
+@@ -56,6 +59,30 @@
+ 
+     KoApplication app(KARBON_MIME_TYPE, *aboutData, argc, argv);
+ 
++    bool exit = false;
++    QSettings settings("KaOS", "karbon");
++    settings.beginGroup("MainWindow");
++    if (settings.value("quitWithoutPrompt").toBool()) {
++      exit = true;
++    } else {
++      QMessageBox quitQuestion;
++      QCheckBox checkBox;
++      checkBox.setText("Do not ask again");
++      quitQuestion.setCheckBox(&checkBox);
++      quitQuestion.setText("Do you understand KaOS ships an unmaintained Frameworks 5 based version of Karbon?/n/nWill you report bugs on the KaOS tracker and not in the offical KDE Bugtracker?");
++      quitQuestion.setWindowTitle("Calligra Frameworks");
++      quitQuestion.setStandardButtons(QMessageBox::Ok);
++      quitQuestion.exec();
++      if (quitQuestion.result() == QMessageBox::Ok) {
++       settings.setValue("quitWithoutPrompt", checkBox.isChecked());
++       exit = true;
++      }
++      }
++      settings.endGroup();
++      if (exit) {
++       QCoreApplication::quit();
++      }
++
+     delete aboutData;
+ 
+     if (!app.start()) {  // parses command line args, create initial docs and mainwindows

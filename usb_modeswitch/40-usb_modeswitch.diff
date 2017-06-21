@@ -1,0 +1,11 @@
+--- a/40-usb_modeswitch.rules	2017-02-05 04:18:50.000000000 -0500
++++ b/40-usb_modeswitch.rules	2017-03-11 22:45:36.868503761 -0500
+@@ -414,7 +414,7 @@
+ ATTR{idVendor}=="0df7", ATTR{idProduct}=="0800", RUN+="usb_modeswitch '/%k'"
+ 
+ # MediaTek MT6276M and others, MediaTek/Medion S4222 and probably others
+-ATTR{idVendor}=="0e8d", ATTR{idProduct}=="0002", RUN+="usb_modeswitch '/%k'"
++# ATTR{idVendor}=="0e8d", ATTR{idProduct}=="0002", RUN+="usb_modeswitch '/%k'"
+ 
+ # MediaTek Wimax USB Card
+ ATTR{idVendor}=="0e8d", ATTR{idProduct}=="7109", RUN+="usb_modeswitch '/%k'"

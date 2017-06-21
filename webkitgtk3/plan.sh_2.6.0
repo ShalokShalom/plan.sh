@@ -1,0 +1,29 @@
+pkg_origin=cosmos
+
+pkg_name=webkitgtk3
+_pkg_name=webkitgtk
+pkg_version=2.6.0
+pkg_description="GNOME platform port of the WebKit rendering engine, offering WebKit’s full functionality"
+pkg_upstream_url="http://webkitgtk.org/"
+pkg_license=('custom')
+pkg_deps=('sqlite' 'libsoup' 'libsecret' 'enchant' 'libgl' 'gst-plugins-base' 'gst-plugins-good'
+         'gtk3' 'libwebp' 'libxslt' 'libxt' 'harfbuzz')
+pkg_build_deps=('gperf' 'gobject-introspection' 'python3' 'mesa' 'ruby' 'gtk2' 'cmake')
+pkg_source=("http://webkitgtk.org/releases/$_pkg_name-${pkg_version}.tar.xz")
+pkg_shasum=('56fa5d14c91ef07e92f6a29469916a12')
+
+do_build() {
+
+  cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DPORT=GTK
+  make
+}
+
+do_package() {
+  make -j1 DESTDIR=${CACHE_PATH} install
+  
+  install -Dm644 $CACHE_PATH/$_pkg_name-$pkg_version/Source/WebKit/LICENSE "$CACHE_PATH/usr/share/licenses/webkitgtk/LICENSE"
+}

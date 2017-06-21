@@ -1,0 +1,54 @@
+common_install()
+{
+    EXTRAMODULES='extramodules-4.11-next'
+    depmod -a $(cat /lib/modules/$EXTRAMODULES/version)
+}
+
+load()
+{
+    modules=(vboxnetadp vboxnetflt vboxpci vboxdrv)
+
+    echo -n 'Loading modules: '
+        for _m in "${modules[@]}"; do
+    modprobe "$_m" && echo -n "$_m "
+    done
+    echo
+}
+
+unload()
+{
+    modules=(vboxnetadp vboxnetflt vboxpci vboxdrv)
+
+    echo -n 'Unloading modules: '
+    for _m in "${modules[@]}"; do
+        lsmod|grep -q "$_m" && rmmod "$_m" && echo -n "$_m "
+    done
+    echo
+}
+
+post_install()
+{
+    common_install
+    load
+}
+
+post_upgrade()
+{
+    common_install
+
+    ## on a new kernel do nothing because one has to reboot anyway
+    if [ -e /lib/modules/`uname -r`/misc/vboxdrv.ko ]; then
+        unload
+        load
+    fi
+}
+
+post_remove()
+{
+    unload
+    common_install
+}
+
+op=$1
+shift
+$op $*

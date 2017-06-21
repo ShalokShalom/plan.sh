@@ -1,0 +1,10 @@
+pkg_origin=cosmos
+pkg_name=xclip
+pkg_version=0.13
+pkg_description='Command line interface to the X11 clipboard'
+pkg_upstream_url='https://github.com/astrand/xclip'
+pkg_license=('GPL')
+pkg_deps=('cosmos/libxmu')
+pkg_build_deps=('core/automake' 'core/autoconf' 'core/gcc')
+pkg_source=("https://github.com/astrand/xclip/archive/$pkg_version.tar.gz")
+pkg_shasum=ca5b8804e3c910a66423a882d79bf3c9450b875ac8528791fb60ec9de667f758
